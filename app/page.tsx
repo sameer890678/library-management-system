@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import AddBookForm from "./component/AddBookForm";
+import BookList from "./component/BookList";
 
 export default async function Home() {
   const { data, error } = await supabase
@@ -15,25 +16,7 @@ export default async function Home() {
       Library Books
     </h1>
     <AddBookForm />
-    {data?.map((book) => (
-      <div
-        key={book.id}
-        className="border rounded-lg p-4 mb-4"
-      >
-        <h2 className="text-2xl font-semibold">
-          {book.title}
-        </h2>
-
-        <p>Author: {book.author}</p>
-        <p>ISBN: {book.isbn || "Not Available"}</p>
-        <p>Publisher: {book.publisher || "Not Available"}</p>
-        <p>Category: {book.category}</p>
-        <p>Pages: {book.pages}</p>
-        <p>
-          Available: {book.available_copies} / {book.total_copies}
-        </p>
-      </div>
-    ))}
+    <BookList books={data ?? []} />
   </main>
   );
 }
