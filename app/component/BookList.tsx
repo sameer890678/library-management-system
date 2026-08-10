@@ -2,7 +2,8 @@
 
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 
 type Book = {
   id: number;
@@ -22,6 +23,37 @@ type BookListProps = {
 };
 
 export default function BookList({ books }: BookListProps) {
+    const [search, setSearch] = useState("");
+    const [hasSearched, setHasSearched] = useState(false);
+    const [category, setCategory] = useState("");
+    const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+    const getCategories = async () => {
+     const { data, error } = await supabase
+       .from("books")
+       .select("category");
+
+     if (error) {
+       console.log(error);
+       return;
+     }
+
+     const uniqueCategories = [
+       ...new Set(
+         data
+           .map((book) => book.category?.trim())
+           .filter((category) => category)
+       ),
+     ];
+
+    setCategories(uniqueCategories);
+    };
+
+    getCategories();
+    }, []);
+
+    const [searchResults, setSearchResults] = useState<Book[]>([]);
     const router = useRouter();
     const [editingId, seteditingId] = useState<number | null>(null);
     const [editedTitle, setEditedTitle] = useState("");
@@ -80,9 +112,84 @@ if (!confirmed) {
   router.refresh();
 };
 
+const handleSearch = async () => {
+  let query = supabase
+    .from("books")
+    .select("*");
+
+  if (search.trim() !== "") {
+    query = query.or(
+      `title.ilike.%${search}%,author.ilike.%${search}%,isbn.ilike.%${search}%`
+    );
+  }
+
+  if (category !== "") {
+    query = query.eq("category", category);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  setSearchResults(data);
+  setHasSearched(true);
+};
+
   return (
     <div>
-      {books?.map((book) => (
+        
+      {/* Search */}
+      <input
+       type="text"
+       placeholder="Search books..."
+       value={search}
+       onChange={(e) => setSearch(e.target.value)}
+       className="border rounded-lg px-4 py-2 mb-6 w-full"
+      />
+
+      <button
+        onClick={handleSearch}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-6 ml-2 hover:bg-blue-700 cursor-pointer"
+    >
+       Search
+      </button>
+
+      <button
+       onClick={() => {
+        setSearch("");
+        setSearchResults([]);
+        setHasSearched(false);
+       }}
+        className="bg-gray-500 text-white px-4 py-2 rounded-lg mb-6 ml-2 hover:bg-gray-700 cursor-pointer"
+       >
+        Clear
+       </button>
+
+       <select
+         value={category}
+         onChange={(e) => setCategory(e.target.value)}
+         className="border rounded-lg px-4 py-2 mb-6 ml-2 bg-emerald-200 text-black"
+       >
+         <option value="" className="bg-white text-black">
+           All Categories
+         </option>
+       
+         {categories.map((cat) => (
+           <option
+             key={cat}
+             value={cat}
+             className="bg-white text-black"
+           >
+             {cat}
+           </option>
+         ))}
+       </select>
+      
+      {/* Books */}
+      {(hasSearched ? searchResults : books)?.map((book) => (
         <div
           key={book.id}
         className="border rounded-lg p-4 mb-4"
@@ -221,7 +328,7 @@ if (!confirmed) {
        {editingId === book.id ? (
        <button
        onClick={() => handleUpdate(book.id)}
-       className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-green-700"
+       className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-green-700 cursor-pointer"
        >
         Save
        </button>
@@ -239,7 +346,7 @@ if (!confirmed) {
         setEditedTotalCopies(book.total_copies);
         setEditedAvailableCopies(book.available_copies);
         }}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-blue-700"
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-blue-700 cursor-pointer"
        >
         Edit
        </button>
@@ -247,14 +354,14 @@ if (!confirmed) {
       {editingId === book.id ? (
       <button
       onClick={() => seteditingId(null)}
-      className="bg-gray-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-gray-700"
+      className="bg-gray-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-gray-700 cursor-pointer"
       >
       Cancel
      </button>
       ) : (
         <button 
         onClick={() => handleDelete(book.id)}
-        className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2 cursor-pointer hover:bg-red-800">
+        className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2 cursor-pointer hover:bg-red-800 cursor-pointer">
           Delete
         </button>
         )}

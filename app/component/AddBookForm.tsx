@@ -74,7 +74,7 @@ export default function AddBookForm() {
       <input type="number" placeholder="Available Copies" value={availableCopies}
        onChange={(e) => setAvailableCopies(e.target.value)} />
 
-      <button className="cursor-pointer" onClick={handleAddBook}>Add Book</button>
+      <button className="bg-green-700 rounded-md px-4 py-2 hover:bg-green-900 cursor-pointer" onClick={handleAddBook}>Add Book</button>
       <p>{message}</p>
     </div>
   );
