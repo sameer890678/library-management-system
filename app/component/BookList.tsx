@@ -171,7 +171,7 @@ const handleSearch = async () => {
        <select
          value={category}
          onChange={(e) => setCategory(e.target.value)}
-         className="border rounded-lg px-4 py-2 mb-6 ml-2 bg-emerald-200 text-black"
+         className="border rounded-lg px-4 py-2 mb-6 ml-2 bg-emerald-200 text-black cursor-pointer"
        >
          <option value="" className="bg-white text-black">
            All Categories
