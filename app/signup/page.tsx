@@ -22,7 +22,19 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name,
+          student_id: studentId,
+          phone,
+        },
+      },
     });
+
+    console.log("SIGNUP DATA:", data);
+    console.log("SESSION:", data.session);
+    console.log("USER:", data.user);
+    console.log("SIGNUP ERROR:", error);
   
     if (error) {
       setMessage(error.message);
@@ -36,23 +48,6 @@ export default function SignupPage() {
       return;
     }
   
-    const { error: memberError } = await supabase
-      .from("members")
-      .insert({
-        user_id: data.user.id,
-        name,
-        student_id: studentId,
-        email,
-        phone,
-        status: "pending",
-      });
-  
-    if (memberError) {
-      console.log("MEMBER ERROR:", memberError);
-      setMessage("Account created, but member profile could not be created.");
-      setLoading(false);
-      return;
-    }
   
     setMessage(
       "Account created successfully! Your account is waiting for admin approval."

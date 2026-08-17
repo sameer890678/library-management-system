@@ -27,6 +27,31 @@ export default function BookList({ books }: BookListProps) {
     const [hasSearched, setHasSearched] = useState(false);
     const [category, setCategory] = useState("");
     const [categories, setCategories] = useState<string[]>([]);
+    const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+      const checkAdmin = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+    
+        if (!user) {
+          setIsAdmin(false);
+          return;
+        }
+    
+        const { data: member } = await supabase
+          .from("members")
+          .select("role, status")
+          .eq("user_id", user.id)
+          .single();
+    
+        if (member?.role === "admin" && member?.status === "approved") {
+          setIsAdmin(true);
+        }
+      };
+    
+      checkAdmin();
+    }, []);
 
     useEffect(() => {
     const getCategories = async () => {
@@ -325,6 +350,8 @@ const handleSearch = async () => {
         )}
         </p>
 
+     {isAdmin && (
+      <>
        {editingId === book.id ? (
        <button
        onClick={() => handleUpdate(book.id)}
@@ -365,8 +392,10 @@ const handleSearch = async () => {
           Delete
         </button>
         )}
-      </div>
-    ))}
+      </>
+     )}
     </div>
-    );
-    }
+  ))}
+    </div>
+  );
+}

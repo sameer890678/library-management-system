@@ -1,11 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 
 export default function AddBookForm() {
   const router = useRouter();
+    const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const { data: member } = await supabase
+        .from("members")
+        .select("role, status")
+        .eq("user_id", user.id)
+        .single();
+
+      if (member?.role === "admin" && member?.status === "approved") {
+        setIsAdmin(true);
+      }
+    };
+
+    checkAdmin();
+  }, []);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -44,38 +70,83 @@ export default function AddBookForm() {
 };
 
   return (
-    <div>
-      <h2>Add New Book</h2>
+    <>
+      {isAdmin && (
+        <div>
+          <h2>Add New Book</h2>
 
-      <input type="text" placeholder="Title" value={title}
-       onChange={(e) => setTitle(e.target.value)} />
-       
-      <input type="text" placeholder="Author" value={author}
-      onChange={(e) => setAuthor(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
 
-      <input type="text" placeholder="ISBN" value={isbn}
-      onChange={(e) => setIsbn(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Author"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
 
-      <input type="text" placeholder="Category" value={category}
-      onChange={(e) => setCategory(e.target.value)} />
+          <input
+            type="text"
+            placeholder="ISBN"
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+          />
 
-      <input type="text" placeholder="Publisher" value={publisher}
-      onChange={(e) => setPublisher(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
 
-      <input type="number" placeholder="Publication Year" value={publicationYear}
-      onChange={(e) => setPublicationYear(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Publisher"
+            value={publisher}
+            onChange={(e) => setPublisher(e.target.value)}
+          />
 
-      <input type="number" placeholder="Pages" value={pages}
-      onChange={(e) => setPages(e.target.value)} />
+          <input
+            type="number"
+            placeholder="Publication Year"
+            value={publicationYear}
+            onChange={(e) => setPublicationYear(e.target.value)}
+          />
 
-      <input type="number" placeholder="Total Copies" value={totalCopies}
-       onChange={(e) => setTotalCopies(e.target.value)}/>
+          <input
+            type="number"
+            placeholder="Pages"
+            value={pages}
+            onChange={(e) => setPages(e.target.value)}
+          />
 
-      <input type="number" placeholder="Available Copies" value={availableCopies}
-       onChange={(e) => setAvailableCopies(e.target.value)} />
+          <input
+            type="number"
+            placeholder="Total Copies"
+            value={totalCopies}
+            onChange={(e) => setTotalCopies(e.target.value)}
+          />
 
-      <button className="bg-teal-500 border-black rounded-md px-4 py-2 hover:bg-teal-700 cursor-pointer text-black" onClick={handleAddBook}>Add Book</button>
-      <p>{message}</p>
-    </div>
+          <input
+            type="number"
+            placeholder="Available Copies"
+            value={availableCopies}
+            onChange={(e) => setAvailableCopies(e.target.value)}
+          />
+
+          <button
+            className="bg-teal-500 border-black rounded-md px-4 py-2 hover:bg-teal-700 cursor-pointer text-black"
+            onClick={handleAddBook}
+          >
+            Add Book
+          </button>
+          <p>{message}</p>
+        </div>
+      )}
+    </>
   );
 }
