@@ -1,5 +1,6 @@
 "use client";
 
+import { error } from "console";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -92,23 +93,38 @@ export default function BookList({ books }: BookListProps) {
     const [editedAvailableCopies, setEditedAvailableCopies] = useState(0);
 
     const handleUpdate = async (id: number) => {
-    const { error } = await supabase
-    .from("books")
-    .update({
-      title: editedTitle,
-      author: editedAuthor,
-      isbn: editedIsbn,
-      publisher: editedPublisher,
-      publication_year: editedPublicationYear,
-      category: editedCategory,
-      pages: editedPages,
-      total_copies: editedTotalCopies,
-      available_copies: editedAvailableCopies,
-    })
-    .eq("id", id);
+    console.log("BOOK ID BEING UPDATED:", id);
+
+    const { data: bookBefore, error: fetchError } = await supabase
+      .from("books")
+      .select("id, title")
+      .eq("id", id)
+      .single();
+  
+    console.log("BOOK FOUND BEFORE UPDATE:", bookBefore);
+    console.log("FETCH ERROR:", fetchError);
+
+    const { data, error } = await supabase
+        .from("books")
+        .update({
+          title: editedTitle,
+          author: editedAuthor,
+          isbn: editedIsbn,
+          publisher: editedPublisher,
+          publication_year: editedPublicationYear,
+          category: editedCategory,
+          pages: editedPages,
+          total_copies: editedTotalCopies,
+          available_copies: editedAvailableCopies,
+        })
+        .eq("id", id)
+        .select();
+  
+      console.log("UPDATE DATA:", data);
+      console.log("UPDATE ERROR:", error);
 
   if (error) {
-    console.log(error);
+    console.log("UPDATE ERROR", error);
     return;
   }
 
@@ -128,6 +144,7 @@ if (!confirmed) {
     .from("books")
     .delete()
     .eq("id", id);
+    
 
   if (error) {
     console.log(error);
@@ -137,7 +154,7 @@ if (!confirmed) {
   router.refresh();
 };
 
-const handleSearch = async () => {
+async function handleSearch() {
   let query = supabase
     .from("books")
     .select("*");
@@ -161,7 +178,7 @@ const handleSearch = async () => {
 
   setSearchResults(data);
   setHasSearched(true);
-};
+}
 
   return (
     <div>
@@ -354,6 +371,7 @@ const handleSearch = async () => {
       <>
        {editingId === book.id ? (
        <button
+       type="button"
        onClick={() => handleUpdate(book.id)}
        className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-green-700 cursor-pointer"
        >
@@ -373,6 +391,7 @@ const handleSearch = async () => {
         setEditedTotalCopies(book.total_copies);
         setEditedAvailableCopies(book.available_copies);
         }}
+        type="button"
         className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-blue-700 cursor-pointer"
        >
         Edit
@@ -380,6 +399,7 @@ const handleSearch = async () => {
       )}
       {editingId === book.id ? (
       <button
+      type="button"
       onClick={() => seteditingId(null)}
       className="bg-gray-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-gray-700 cursor-pointer"
       >
@@ -387,6 +407,7 @@ const handleSearch = async () => {
      </button>
       ) : (
         <button 
+        type="button"
         onClick={() => handleDelete(book.id)}
         className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2 cursor-pointer hover:bg-red-800 cursor-pointer">
           Delete
