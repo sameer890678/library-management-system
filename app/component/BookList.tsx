@@ -4,6 +4,7 @@ import { error } from "console";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import BorrowButton from "./BorrowButton";
 
 
 type Book = {
@@ -29,23 +30,33 @@ export default function BookList({ books }: BookListProps) {
     const [category, setCategory] = useState("");
     const [categories, setCategories] = useState<string[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(() => {
       const checkAdmin = async () => {
         const {
           data: { user },
         } = await supabase.auth.getUser();
     
+       if (user) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+
         if (!user) {
           setIsAdmin(false);
+          setIsLoggedIn(false);
           return;
         }
-    
+      
         const { data: member } = await supabase
           .from("members")
           .select("role, status")
           .eq("user_id", user.id)
           .single();
     
+          console.log("CURRENT MEMBER:", member);
+
         if (member?.role === "admin" && member?.status === "approved") {
           setIsAdmin(true);
         }
@@ -55,6 +66,16 @@ export default function BookList({ books }: BookListProps) {
     }, []);
 
     useEffect(() => {
+      const checkLogin = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+  
+        console.log("CURRENT USER:", user);
+      };
+
+    checkLogin();
+
     const getCategories = async () => {
      const { data, error } = await supabase
        .from("books")
@@ -101,7 +122,8 @@ export default function BookList({ books }: BookListProps) {
       .eq("id", id)
       .single();
   
-    console.log("BOOK FOUND BEFORE UPDATE:", bookBefore);
+    console.log("IS LOGGED IN:", isLoggedIn);
+    console.log("IS ADMIN:", isAdmin);
     console.log("FETCH ERROR:", fetchError);
 
     const { data, error } = await supabase
@@ -366,6 +388,14 @@ async function handleSearch() {
           book.total_copies
         )}
         </p>
+
+    
+    {isLoggedIn && !isAdmin && (
+      <BorrowButton
+        bookId={book.id}
+        bookTitle={book.title}
+      />
+    )}
 
      {isAdmin && (
       <>
