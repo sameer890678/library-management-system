@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { useRouter } from "next/navigation";
 
 type Member = {
   id: number;
@@ -10,14 +11,45 @@ type Member = {
   email: string;
   phone: string;
   status: string;
+  role: string;
 };
 
 export default function AdminPage() {
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    fetchPendingMembers();
+    checkAdmin();
   }, []);
+  
+  const checkAdmin = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+  
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+  
+    const { data: member, error } = await supabase
+      .from("members")
+      .select("role, status")
+      .eq("user_id", user.id)
+      .single();
+  
+    if (error || !member) {
+      router.push("/");
+      return;
+    }
+  
+    if (member.role !== "admin" || member.status !== "approved") {
+      router.push("/");
+      return;
+    }
+  
+    fetchPendingMembers();
+  };
 
   const fetchPendingMembers = async () => {
     const { data, error } = await supabase
