@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 type Borrowing = {
@@ -19,6 +20,7 @@ export default function MyBorrowedBooks() {
   const [borrowings, setBorrowings] = useState<Borrowing[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const loadBorrowings = async () => {
@@ -65,6 +67,31 @@ export default function MyBorrowedBooks() {
     loadBorrowings();
   }, []);
 
+  const handleReturn = async (borrowingId: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to return this book?"
+    );
+  
+    if (!confirmed) {
+      return;
+    }
+  
+    const { error } = await supabase.rpc("return_book", {
+      p_borrowing_id: borrowingId,
+    });
+  
+    if (error) {
+      console.log("RETURN ERROR:", error);
+      setMessage(error.message);
+      return;
+    }
+  
+    setMessage("Book returned successfully!");
+  
+    router.refresh();
+  
+    window.location.reload();
+  };
   return (
     <main className="min-h-screen p-10">
 
@@ -124,6 +151,15 @@ export default function MyBorrowedBooks() {
                 <strong>Status:</strong>{" "}
                 {borrowing.status}
               </p>
+
+              {borrowing.status === "borrowed" && (
+                <button
+                  onClick={() => handleReturn(borrowing.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg mt-3 hover:bg-red-700 cursor-pointer"
+                >
+                  Return Book
+                </button>
+              )}
 
             </div>
           ))}
