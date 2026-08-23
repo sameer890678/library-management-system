@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
+import AdminBorrowings from "./component/AdminBorrowings";
+import AdminStats from "./component/AdminStats";
 
 type Member = {
   id: number;
@@ -102,6 +104,8 @@ export default function AdminPage() {
         Admin Dashboard
       </h1>
 
+      <AdminStats />
+      
       <section>
         <h2 className="text-2xl font-semibold mb-4">
           Pending Signup Requests
@@ -148,6 +152,7 @@ export default function AdminPage() {
           </div>
         )}
       </section>
+      <AdminBorrowings />
     </main>
   );
 }

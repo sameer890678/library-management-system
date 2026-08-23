@@ -149,7 +149,14 @@ export default function MyBorrowedBooks() {
 
               <p>
                 <strong>Status:</strong>{" "}
-                {borrowing.status}
+                {borrowing.status === "borrowed" &&
+                new Date(borrowing.due_date) < new Date() ? (
+                  <span className="text-red-600 font-bold">
+                    OVERDUE
+                  </span>
+                ) : (
+                  borrowing.status
+                )}
               </p>
 
               {borrowing.status === "borrowed" && (
