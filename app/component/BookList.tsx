@@ -77,6 +77,7 @@ export default function BookList({ books }: BookListProps) {
         } = await supabase.auth.getUser();
     
         setUser(user);
+        setIsAdmin(false);
     
         if (user) {
           const { data: member, error } = await supabase

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
 ;
@@ -14,6 +14,8 @@ type Member = {
   student_id: string | null;
   email: string | null;
   phone: string | null;
+  role: string;
+  status: string;
 };
 
 export default function BorrowButton({
@@ -26,6 +28,53 @@ export default function BorrowButton({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMember, setLoadingMember] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [canBorrow, setCanBorrow] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      setUser(user);
+      setCanBorrow(false);
+  
+      if (!user) {
+        return;
+      }
+  
+      const { data: memberData, error } = await supabase
+        .from("members")
+        .select("role, status")
+        .eq("user_id", user.id)
+        .single();
+  
+      if (error) {
+        console.log("BORROW BUTTON MEMBER ERROR:", error);
+        return;
+      }
+  
+      if (
+        memberData?.role === "user" &&
+        memberData?.status === "approved"
+      ) {
+        setCanBorrow(true);
+      }
+    };
+  
+    checkUser();
+  
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      checkUser();
+    });
+  
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const openBorrowPopup = async () => {
     setIsOpen(true);
@@ -44,7 +93,7 @@ export default function BorrowButton({
 
     const { data, error } = await supabase
       .from("members")
-      .select("name, student_id, email, phone")
+      .select("name, student_id, email, phone, role, status")
       .eq("user_id", user.id)
       .single();
 
@@ -110,12 +159,16 @@ export default function BorrowButton({
   return (
     <>
       {/* Borrow Button */}
-      <button
-        onClick={openBorrowPopup}
-        className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-emerald-700 cursor-pointer"
-      >
-        Borrow Book
-      </button>
+      {canBorrow &&
+        member?.role === "user" &&
+        member?.status === "approved" && (
+          <button
+            onClick={openBorrowPopup}
+            className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-emerald-700 cursor-pointer"
+          >
+            Borrow Book
+          </button>
+        )}
 
       {/* Borrow Popup */}
       {isOpen && (
