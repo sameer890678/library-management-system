@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import AddBookForm from "./component/AddBookForm";
 import BookList from "./component/BookList";
+import Navbar from "./component/Navbar";
 
 export default async function Home() {
   const { data, error } = await supabase
@@ -12,9 +13,7 @@ export default async function Home() {
 
   return (
      <main className="min-h-screen p-10">
-    <h1 className="text-4xl font-bold mb-6">
-      Library Books
-    </h1>
+    <Navbar />
     <AddBookForm />
     <BookList books={data ?? []} />
   </main>

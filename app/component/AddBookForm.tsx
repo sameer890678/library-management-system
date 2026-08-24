@@ -7,7 +7,10 @@ import { useRouter } from "next/navigation";
 export default function AddBookForm() {
   const router = useRouter();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [checkingUser, setCheckingUser] = useState(true);
 
+    //FOR ADMIN CHECK
   useEffect(() => {
     const checkAdmin = async () => {
       const {
@@ -31,6 +34,50 @@ export default function AddBookForm() {
     };
 
     checkAdmin();
+  }, []);
+
+  //FOR USER CHECK
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      setUser(user);
+  
+      if (user) {
+        const { data: member, error } = await supabase
+          .from("members")
+          .select("role, status")
+          .eq("user_id", user.id)
+          .single();
+  
+        if (error) {
+          console.log("ADD BOOK MEMBER ERROR:", error);
+        }
+  
+        if (
+          member?.role === "admin" &&
+          member?.status === "approved"
+        ) {
+          setIsAdmin(true);
+        }
+      }
+  
+      setCheckingUser(false);
+    };
+  
+    checkUser();
+  
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      checkUser();
+    });
+  
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const [title, setTitle] = useState("");
@@ -69,6 +116,14 @@ export default function AddBookForm() {
   router.refresh(); // Refresh the page to show the new book
 };
 
+ if (checkingUser) {
+   return null;
+ }
+ 
+ if (!user || !isAdmin) {
+   return null;
+ }
+ 
   return (
     <>
       {isAdmin && (

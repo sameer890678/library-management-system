@@ -31,6 +31,10 @@ export default function BookList({ books }: BookListProps) {
     const [categories, setCategories] = useState<string[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [checkingUser, setCheckingUser] = useState(true);
+
+    //for checking admin
     useEffect(() => {
       const checkAdmin = async () => {
         const {
@@ -65,6 +69,51 @@ export default function BookList({ books }: BookListProps) {
       checkAdmin();
     }, []);
 
+    //for checking user
+    useEffect(() => {
+      const checkUser = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+    
+        setUser(user);
+    
+        if (user) {
+          const { data: member, error } = await supabase
+            .from("members")
+            .select("role, status")
+            .eq("user_id", user.id)
+            .single();
+    
+          if (error) {
+            console.log("BOOK LIST MEMBER ERROR:", error);
+          }
+    
+          if (
+            member?.role === "admin" &&
+            member?.status === "approved"
+          ) {
+            setIsAdmin(true);
+          }
+        }
+    
+        setCheckingUser(false);
+      };
+    
+      checkUser();
+    
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(() => {
+        checkUser();
+      });
+    
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, []);
+
+    //for checking login and getting categories
     useEffect(() => {
       const checkLogin = async () => {
         const {
