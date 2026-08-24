@@ -159,9 +159,7 @@ export default function BorrowButton({
   return (
     <>
       {/* Borrow Button */}
-      {canBorrow &&
-        member?.role === "user" &&
-        member?.status === "approved" && (
+      {canBorrow && (
           <button
             onClick={openBorrowPopup}
             className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-emerald-700 cursor-pointer"

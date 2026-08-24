@@ -1,158 +1,32 @@
-"use client";
+import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase-server";
+import AdminDashboard from "./AdminDashboard";
 
-import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase";
-import { useRouter } from "next/navigation";
-import AdminBorrowings from "./component/AdminBorrowings";
-import AdminStats from "./component/AdminStats";
+export default async function AdminPage() {
+  const supabase = await createClient();
 
-type Member = {
-  id: number;
-  name: string;
-  student_id: string;
-  email: string;
-  phone: string;
-  status: string;
-  role: string;
-};
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function AdminPage() {
-  const router = useRouter();
-  const [members, setMembers] = useState<Member[]>([]);
+  if (!user) {
+    redirect("/login");
+  }
 
-  useEffect(() => {
-    checkAdmin();
-  }, []);
-  
-  const checkAdmin = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-  
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-  
-    const { data: member, error } = await supabase
-      .from("members")
-      .select("role, status")
-      .eq("user_id", user.id)
-      .single();
-  
-    if (error || !member) {
-      router.push("/");
-      return;
-    }
-  
-    if (member.role !== "admin" || member.status !== "approved") {
-      router.push("/");
-      return;
-    }
-  
-    fetchPendingMembers();
-  };
+  const { data: member, error } = await supabase
+    .from("members")
+    .select("role, status")
+    .eq("user_id", user.id)
+    .single();
 
-  const fetchPendingMembers = async () => {
-    const { data, error } = await supabase
-      .from("members")
-      .select("*")
-      .eq("status", "pending");
+  if (
+    error ||
+    !member ||
+    member.role !== "admin" ||
+    member.status !== "approved"
+  ) {
+    redirect("/");
+  }
 
-      console.log("PENDING MEMBERS:", data);
-      console.log("MEMBERS ERROR:", error);
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    setMembers(data || []);
-  };
-
-  const approveMember = async (id: number) => {
-    const { error } = await supabase
-      .from("members")
-      .update({ status: "approved" })
-      .eq("id", id);
-  
-    if (error) {
-      console.log(error);
-      return;
-    }
-  
-    fetchPendingMembers();
-  };
-
-  const rejectMember = async (id: number) => {
-    const { error } = await supabase
-      .from("members")
-      .update({ status: "rejected" })
-      .eq("id", id);
-  
-    if (error) {
-      console.log(error);
-      return;
-    }
-  
-    fetchPendingMembers();
-  };
-
-  return (
-    <main className="p-10">
-      <h1 className="text-4xl font-bold mb-8">
-        Admin Dashboard
-      </h1>
-
-      <AdminStats />
-      
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">
-          Pending Signup Requests
-        </h2>
-
-        {members.length === 0 ? (
-          <div className="border rounded-lg p-6">
-            <p className="text-gray-500">
-              No pending signup requests.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {members.map((member) => (
-              <div
-                key={member.id}
-                className="border rounded-lg p-6"
-              >
-                <h3 className="text-xl font-semibold">
-                  {member.name}
-                </h3>
-
-                <p>Student ID: {member.student_id}</p>
-                <p>Email: {member.email}</p>
-                <p>Phone: {member.phone}</p>
-
-                <div className="mt-4">
-                  <button
-                    onClick={() => approveMember(member.id)}
-                    className="bg-emerald-500 text-white px-4 py-2 rounded-lg mr-2 cursor-pointer hover:bg-emerald-700"
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => rejectMember(member.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red-700"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-      <AdminBorrowings />
-    </main>
-  );
+  return <AdminDashboard />;
 }

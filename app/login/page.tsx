@@ -60,7 +60,7 @@ export default function LoginPage() {
     
     if (member.status === "approved") {
       if (member.role === "admin") {
-        window.location.href = "/admin";
+        window.location.href = "/";
       } else {
         window.location.href = "/";
       }
