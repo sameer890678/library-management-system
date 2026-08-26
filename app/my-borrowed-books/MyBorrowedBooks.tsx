@@ -27,17 +27,19 @@ export default function MyBorrowedBooks() {
     const loadBorrowings = async () => {
       setLoading(true);
       setMessage("");
-
+  
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+        data: { session },
+      } = await supabase.auth.getSession();
+  
+      const user = session?.user;
+  
       if (!user) {
         setMessage("Please log in to view your borrowed books.");
         setLoading(false);
         return;
       }
-
+  
       const { data, error } = await supabase
         .from("borrowings")
         .select(`
@@ -54,18 +56,18 @@ export default function MyBorrowedBooks() {
         `)
         .eq("user_id", user.id)
         .order("borrow_date", { ascending: false });
-
+  
       if (error) {
         console.log("BORROWINGS ERROR:", error);
         setMessage("Failed to load your borrowed books.");
         setLoading(false);
         return;
       }
-
+  
       setBorrowings(data as unknown as Borrowing[]);
       setLoading(false);
     };
-
+  
     loadBorrowings();
   }, []);
 
@@ -89,8 +91,6 @@ export default function MyBorrowedBooks() {
     }
   
     setMessage("Book returned successfully!");
-  
-    router.refresh();
   
     window.location.reload();
   };

@@ -33,99 +33,71 @@ export default function BookList({ books }: BookListProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [checkingUser, setCheckingUser] = useState(true);
+    const [isApprovedUser, setIsApprovedUser] = useState(false);
 
-    //for checking admin
     useEffect(() => {
-      const checkAdmin = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      const updateAuthState = async (session: any) => {
+        const currentUser = session?.user ?? null;
     
-       if (user) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-
-        if (!user) {
+        setUser(currentUser);
+        setIsLoggedIn(!!currentUser);
+    
+        if (!currentUser) {
           setIsAdmin(false);
-          setIsLoggedIn(false);
+          setIsApprovedUser(false);
+          setCheckingUser(false);
+
           return;
         }
-      
-        const { data: member } = await supabase
+    
+        const { data: member, error } = await supabase
           .from("members")
           .select("role, status")
-          .eq("user_id", user.id)
+          .eq("user_id", currentUser.id)
           .single();
     
-          console.log("CURRENT MEMBER:", member);
-
-        if (member?.role === "admin" && member?.status === "approved") {
-          setIsAdmin(true);
-        }
-      };
-    
-      checkAdmin();
-    }, []);
-
-    //for checking user
-    useEffect(() => {
-      const checkUser = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-    
-        setUser(user);
-        setIsAdmin(false);
-    
-        if (user) {
-          const { data: member, error } = await supabase
-            .from("members")
-            .select("role, status")
-            .eq("user_id", user.id)
-            .single();
-    
-          if (error) {
-            console.log("BOOK LIST MEMBER ERROR:", error);
-          }
-    
-          if (
+        if (error) {
+          console.log("BOOK LIST MEMBER ERROR:", error);
+          setIsAdmin(false);
+          setIsApprovedUser(false);
+        } else {
+          setIsAdmin(
             member?.role === "admin" &&
             member?.status === "approved"
-          ) {
-            setIsAdmin(true);
-          }
+          );
+          setIsApprovedUser(
+            member?.role === "user" &&
+            member?.status === "approved"
+          );
         }
     
         setCheckingUser(false);
       };
     
-      checkUser();
+      const loadSession = async () => {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+    
+        updateAuthState(session);
+      };
+    
+      loadSession();
     
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange(() => {
-        checkUser();
-      });
+      } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          updateAuthState(session);
+        }
+      );
     
       return () => {
         subscription.unsubscribe();
       };
     }, []);
 
-    //for checking login and getting categories
     useEffect(() => {
-      const checkLogin = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-  
-        console.log("CURRENT USER:", user);
-      };
-
-    checkLogin();
-
     const getCategories = async () => {
      const { data, error } = await supabase
        .from("books")
@@ -440,10 +412,11 @@ async function handleSearch() {
         </p>
 
     
-    {isLoggedIn && !isAdmin && (
+    {isApprovedUser && (
       <BorrowButton
         bookId={book.id}
         bookTitle={book.title}
+        canBorrow={isApprovedUser}
       />
     )}
 

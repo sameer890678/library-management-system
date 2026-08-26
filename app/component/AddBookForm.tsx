@@ -10,71 +10,56 @@ export default function AddBookForm() {
     const [user, setUser] = useState<any>(null);
     const [checkingUser, setCheckingUser] = useState(true);
 
-    //FOR ADMIN CHECK
+    
+  //FOR MEMBER CHECK
   useEffect(() => {
-    const checkAdmin = async () => {
+    const loadUser = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
+        data: { session },
+      } = await supabase.auth.getSession();
+  
+      await updateUser(session);
+    };
+  
+    const updateUser = async (session: any) => {
+      const currentUser = session?.user ?? null;
+  
+      setUser(currentUser);
+  
+      if (!currentUser) {
         setIsAdmin(false);
+        setCheckingUser(false);
         return;
       }
-
-      const { data: member } = await supabase
+  
+      const { data: member, error } = await supabase
         .from("members")
         .select("role, status")
-        .eq("user_id", user.id)
+        .eq("user_id", currentUser.id)
         .single();
-
-      if (member?.role === "admin" && member?.status === "approved") {
-        setIsAdmin(true);
-      }
-    };
-
-    checkAdmin();
-  }, []);
-
-  //FOR USER CHECK
-  useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
   
-      setUser(user);
-  
-      if (user) {
-        const { data: member, error } = await supabase
-          .from("members")
-          .select("role, status")
-          .eq("user_id", user.id)
-          .single();
-  
-        if (error) {
-          console.log("ADD BOOK MEMBER ERROR:", error);
-        }
-  
-        if (
+      if (error) {
+        console.log("ADD BOOK MEMBER ERROR:", error);
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(
           member?.role === "admin" &&
           member?.status === "approved"
-        ) {
-          setIsAdmin(true);
-        }
+        );
       }
   
       setCheckingUser(false);
     };
   
-    checkUser();
+    loadUser();
   
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      checkUser();
-    });
-  
+    } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        updateUser(session);
+      }
+    );
     return () => {
       subscription.unsubscribe();
     };
@@ -123,7 +108,7 @@ export default function AddBookForm() {
  if (!user || !isAdmin) {
    return null;
  }
- 
+
   return (
     <>
       {isAdmin && (

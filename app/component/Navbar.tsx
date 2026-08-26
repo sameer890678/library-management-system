@@ -15,73 +15,91 @@ export default function Navbar() {
 
   const [user, setUser] = useState<any>(null);
   const [member, setMember] = useState<Member | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
+    const loadSession = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUser(user);
-
-      if (user) {
+        data: { session },
+      } = await supabase.auth.getSession();
+  
+      const currentUser = session?.user ?? null;
+  
+      setUser(currentUser);
+  
+      if (currentUser) {
         const { data, error } = await supabase
           .from("members")
           .select("role, status")
-          .eq("user_id", user.id)
+          .eq("user_id", currentUser.id)
           .single();
-
+  
         if (error) {
           console.log("NAVBAR MEMBER ERROR:", error);
+          setMember(null);
+        } else {
+          setMember(data);
         }
-
-        setMember(data);
+      } else {
+        setMember(null);
       }
-
-      setLoading(false);
+  
+      
     };
-
-    getUser();
-
+  
+    loadSession();
+  
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      getUser();
-    });
+    } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        const currentUser = session?.user ?? null;
+  
+        setUser(currentUser);
+  
+        if (!currentUser) {
+          setMember(null);
 
+          return;
+        }
+  
+        const { data, error } = await supabase
+          .from("members")
+          .select("role, status")
+          .eq("user_id", currentUser.id)
+          .single();
+  
+        if (error) {
+          console.log("NAVBAR MEMBER ERROR:", error);
+          setMember(null);
+        } else {
+          setMember(data);
+        }
+  
+       
+      }
+    );
+  
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.log("LOGOUT ERROR:", error);
-      return;
-    }
-
-    router.push("/");
-    router.refresh();
-  };
-
-  if (loading) {
-    return (
-      <nav className="border-b p-4">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold">
-            Library Management System
-          </Link>
-        </div>
-      </nav>
-    );
-  }
 
   const isAdmin =
     member?.role === "admin" &&
     member?.status === "approved";
+
+    const handleLogout = async () => {
+      const { error } = await supabase.auth.signOut();
+    
+      if (error) {
+        console.log("LOGOUT ERROR:", error);
+        return;
+      }
+    
+      router.push("/");
+      router.refresh();
+    };
 
   return (
     <nav className="border-b p-4">
