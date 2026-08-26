@@ -9,6 +9,7 @@ type Borrowing = {
   book_id: number;
   borrow_date: string;
   due_date: string;
+  return_date: string | null;
   status: string;
   books: {
     title: string;
@@ -44,6 +45,7 @@ export default function MyBorrowedBooks() {
           book_id,
           borrow_date,
           due_date,
+          return_date,
           status,
           books (
             title,
@@ -145,6 +147,13 @@ export default function MyBorrowedBooks() {
                 {new Date(
                   borrowing.due_date
                 ).toLocaleDateString()}
+              </p>
+
+              <p>
+                <strong>Return Date:</strong>{" "}
+                {borrowing.return_date
+                  ? new Date(borrowing.return_date).toLocaleDateString()
+                  : "Not returned yet"}
               </p>
 
               <p>

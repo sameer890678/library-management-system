@@ -10,6 +10,7 @@ type Borrowing = {
   book_id: number;
   borrow_date: string;
   due_date: string;
+  return_date: string | null;
   status: string;
   members: {
     name: string;
@@ -41,6 +42,7 @@ export default function AdminBorrowings() {
         book_id,
         borrow_date,
         due_date,
+        return_date,
         status,
         members (
           name,
@@ -84,6 +86,30 @@ export default function AdminBorrowings() {
   
     return matchesSearch && matchesFilter;
   });
+
+  const returnBook = async (borrowingId: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to mark this book as returned?"
+    );
+  
+    if (!confirmed) {
+      return;
+    }
+  
+    const { error } = await supabase.rpc("return_book", {
+      p_borrowing_id: borrowingId,
+    });
+  
+    if (error) {
+      console.log("RETURN BOOK ERROR:", error);
+      alert(error.message);
+      return;
+    }
+  
+    alert("Book returned successfully!");
+  
+    fetchBorrowings();
+  };
 
   return (
     <section className="mt-10">
@@ -187,6 +213,13 @@ export default function AdminBorrowings() {
               </p>
 
               <p>
+                <strong>Return Date:</strong>{" "}
+                {borrowing.return_date
+                  ? new Date(borrowing.return_date).toLocaleDateString()
+                  : "Not returned yet"}
+              </p>
+
+              <p>
                 <strong>Status:</strong>{" "}
                 {borrowing.status === "borrowed" &&
                 new Date(borrowing.due_date) < new Date() ? (
@@ -197,6 +230,16 @@ export default function AdminBorrowings() {
                   borrowing.status
                 )}
               </p>
+
+              {borrowing.status !== "returned" && (
+                <button
+                  type="button"
+                  onClick={() => returnBook(borrowing.id)}
+                  className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-emerald-700 cursor-pointer"
+                >
+                  Return Book
+                </button>
+              )}
 
             </div>
           ))}
