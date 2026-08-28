@@ -19,6 +19,8 @@ export default function LoginPage() {
       email,
       password,
     });
+
+    console.log("1. SIGN IN FINISHED", data, error);
     
     if (error) {
       setMessage(error.message);
@@ -37,6 +39,8 @@ export default function LoginPage() {
       .select("status, role")
       .eq("user_id", data.user.id)
       .single();
+
+      console.log("2. MEMBER QUERY FINISHED", member, memberError);
     
     if (memberError || !member) {
       setMessage("Member account not found.");
@@ -59,12 +63,12 @@ export default function LoginPage() {
     }
     
     if (member.status === "approved") {
+      console.log("3. REDIRECTING");
       if (member.role === "admin") {
         window.location.href = "/";
       } else {
         window.location.href = "/";
       }
-      setLoading(false);
       return;
     }
 
