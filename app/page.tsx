@@ -6,7 +6,8 @@ import Navbar from "./component/Navbar";
 export default async function Home() {
   const { data, error } = await supabase
     .from("books")
-    .select("*");
+    .select("*")
+    .order("title", { ascending: true });
 
   console.log(data);
   console.log(error);
@@ -18,4 +19,8 @@ export default async function Home() {
     <BookList books={data ?? []} />
   </main>
   );
+}
+
+function order(arg0: string, arg1: { ascending: boolean; }) {
+  throw new Error("Function not implemented.");
 }
