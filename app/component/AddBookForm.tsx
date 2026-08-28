@@ -112,14 +112,17 @@ export default function AddBookForm() {
   return (
     <>
       {isAdmin && (
-        <div>
-          <h2>Add New Book</h2>
+        <div className="mt-8 space-y-4 mb-10 rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8 shadow-xl backdrop-blur-md">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+            Add New Book
+          </h2>
 
           <input
             type="text"
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -127,6 +130,7 @@ export default function AddBookForm() {
             placeholder="Author"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -134,6 +138,7 @@ export default function AddBookForm() {
             placeholder="ISBN"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -141,6 +146,7 @@ export default function AddBookForm() {
             placeholder="Category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -148,6 +154,7 @@ export default function AddBookForm() {
             placeholder="Publisher"
             value={publisher}
             onChange={(e) => setPublisher(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -155,6 +162,7 @@ export default function AddBookForm() {
             placeholder="Publication Year"
             value={publicationYear}
             onChange={(e) => setPublicationYear(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -162,6 +170,7 @@ export default function AddBookForm() {
             placeholder="Pages"
             value={pages}
             onChange={(e) => setPages(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -169,6 +178,7 @@ export default function AddBookForm() {
             placeholder="Total Copies"
             value={totalCopies}
             onChange={(e) => setTotalCopies(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <input
@@ -176,15 +186,17 @@ export default function AddBookForm() {
             placeholder="Available Copies"
             value={availableCopies}
             onChange={(e) => setAvailableCopies(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
 
           <button
-            className="bg-teal-500 border-black rounded-md px-4 py-2 hover:bg-teal-700 cursor-pointer text-black"
+            className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-3 font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] hover:shadow-emerald-500/30 cursor-pointer"
             onClick={handleAddBook}
           >
             Add Book
           </button>
-          <p>{message}</p>
+          <p className="text-center text-sm text-emerald-400">
+            {message}</p>
         </div>
       )}
     </>
