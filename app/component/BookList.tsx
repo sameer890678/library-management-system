@@ -1,6 +1,5 @@
 "use client";
 
-import { error } from "console";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,6 +33,8 @@ export default function BookList({ books }: BookListProps) {
     const [user, setUser] = useState<any>(null);
     const [checkingUser, setCheckingUser] = useState(true);
     const [isApprovedUser, setIsApprovedUser] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const booksPerPage = 12;
 
     useEffect(() => {
       const updateAuthState = async (session: any) => {
@@ -198,6 +199,19 @@ if (!confirmed) {
   router.refresh();
 };
 
+const displayedBooks = hasSearched ? searchResults : books;
+
+const totalPages = Math.ceil(
+  displayedBooks.length / booksPerPage
+);
+
+const startIndex = (currentPage - 1) * booksPerPage;
+
+const currentBooks = displayedBooks.slice(
+  startIndex,
+  startIndex + booksPerPage
+);
+
 async function handleSearch() {
   let query = supabase
     .from("books")
@@ -222,6 +236,7 @@ async function handleSearch() {
 
   setSearchResults(data);
   setHasSearched(true);
+  setCurrentPage(1);
 }
 
   return (
@@ -248,6 +263,7 @@ async function handleSearch() {
         setSearch("");
         setSearchResults([]);
         setHasSearched(false);
+        setCurrentPage(1);
        }}
         className="bg-gray-500 text-white px-4 py-2 rounded-lg mb-6 ml-2 hover:bg-gray-700 cursor-pointer"
        >
@@ -275,7 +291,8 @@ async function handleSearch() {
        </select>
       
       {/* Books */}
-      {(hasSearched ? searchResults : books)?.map((book) => (
+      {currentBooks.map((book) => (
+        
         <div
           key={book.id}
         className="border rounded-lg p-4 mb-4"
@@ -470,6 +487,99 @@ async function handleSearch() {
      )}
     </div>
   ))}
+
+  {totalPages > 1 && (
+    <div className="flex justify-center items-center gap-2 mt-8 mb-4 flex-wrap">
+  
+      {/* Previous */}
+      <button
+        onClick={() =>
+          setCurrentPage((page) => Math.max(page - 1, 1))
+        }
+        disabled={currentPage === 1}
+        className="px-4 py-2 rounded-lg bg-gray-700 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-600 cursor-pointer"
+      >
+        ←
+      </button>
+  
+      {/* Page 1 */}
+      <button
+        onClick={() => setCurrentPage(1)}
+        className={`px-4 py-2 rounded-lg ${
+          currentPage === 1
+            ? "bg-emerald-500 text-white"
+            : "bg-gray-700 text-white hover:bg-gray-600"
+        }`}
+      >
+        1
+      </button>
+
+      {/* Middle pages */}
+      {currentPage > 3 && (
+        <span className="px-2 text-white">...</span>
+      )}
+      
+      {Array.from(
+        { length: 3 },
+        (_, i) => currentPage + i - 1
+      )
+        .filter(
+          (page) =>
+            page > 1 &&
+            page < totalPages
+        )
+        .map((page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-4 py-2 rounded-lg ${
+              currentPage === page
+                ? "bg-emerald-500 text-white"
+                : "bg-gray-700 text-white hover:bg-gray-600"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+
+  
+      {/* Dots */}
+      {currentPage < totalPages - 3 && (
+        <span className="px-2 text-white">
+          ...
+        </span>
+      )}
+  
+      {/* Last page */}
+      {totalPages > 1 && (
+        <button
+          onClick={() => setCurrentPage(totalPages)}
+          className={`px-4 py-2 rounded-lg ${
+            currentPage === totalPages
+              ? "bg-emerald-500 text-white"
+              : "bg-gray-700 text-white hover:bg-gray-600 cursor-pointer"
+          }`}
+        >
+          {totalPages}
+        </button>
+      )}
+  
+      {/* Next */}
+      <button
+        onClick={() =>
+          setCurrentPage((page) =>
+            Math.min(page + 1, totalPages)
+          )
+        }
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 rounded-lg bg-gray-700 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-600 cursor-pointer"
+      >
+        →
+      </button>
+  
+    </div>
+  )}
+ 
     </div>
   );
 }
