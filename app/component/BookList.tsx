@@ -240,20 +240,21 @@ async function handleSearch() {
 }
 
   return (
-    <div>
+    <div className="mb-8 rounded-2xl border border-white/10 bg-slate-800/60 p-5 shadow-xl backdrop-blur-md space-y-4">
         
       {/* Search */}
+      <div className="flex flex-col lg:flex-row gap-3">
       <input
        type="text"
        placeholder="Search books..."
        value={search}
        onChange={(e) => setSearch(e.target.value)}
-       className="border rounded-lg px-4 py-2 mb-6 w-full"
+       className="flex-1 rounded-xl border border-slate-600 bg-slate-900/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
       />
 
       <button
         onClick={handleSearch}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-6 ml-2 hover:bg-blue-700 cursor-pointer"
+        className="rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:scale-[1.02] cursor-pointer"
     >
        Search
       </button>
@@ -265,7 +266,7 @@ async function handleSearch() {
         setHasSearched(false);
         setCurrentPage(1);
        }}
-        className="bg-gray-500 text-white px-4 py-2 rounded-lg mb-6 ml-2 hover:bg-gray-700 cursor-pointer"
+        className="rounded-xl border border-slate-600 bg-slate-700 px-5 py-3 font-semibold text-white transition-all hover:bg-slate-600 cursor-pointer"
        >
         Clear
        </button>
@@ -273,7 +274,7 @@ async function handleSearch() {
        <select
          value={category}
          onChange={(e) => setCategory(e.target.value)}
-         className="border rounded-lg px-4 py-2 mb-6 ml-2 bg-emerald-200 text-black cursor-pointer"
+         className="rounded-xl border border-slate-600 bg-slate-900/80 px-4 py-3 text-white outline-none transition-all focus:border-emerald-500 cursor-pointer"
        >
          <option value="" className="bg-white text-black">
            All Categories
@@ -289,20 +290,21 @@ async function handleSearch() {
            </option>
          ))}
        </select>
-      
+      </div>
       {/* Books */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
       {currentBooks.map((book) => (
         
         <div
           key={book.id}
-        className="border rounded-lg p-4 mb-4"
+        className="h-full bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 flex flex-col"
       >
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold text-white mb-3">
          {editingId === book.id ? (
          <input
           type="text"
           value={editedTitle}
-          className="border rounded px-2 py-1"
+          className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-lg font-semibold text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           onChange={(e) => setEditedTitle(e.target.value)}
         />
         ) : (
@@ -310,50 +312,50 @@ async function handleSearch() {
         )}
         </h2>
 
-        <p>
-        Author:{" "}
+        <p className="text-slate-300 mb-2">
+        <span className="text-slate-400">Author:</span>{" "}
        {editingId === book.id ? (
        <input
         type="text"
         value={editedAuthor}
         onChange={(e) => setEditedAuthor(e.target.value)}
-        className="border rounded px-2 py-1"
+        className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
         />
         ) : (
         book.author
         )}
         </p>
 
-         <p>
-          ISBN:{" "}
+         <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">ISBN:</span>{" "}
           {editingId === book.id ? (
             <input
               type="text"
               value={editedIsbn}
               onChange={(e) => setEditedIsbn(e.target.value)}
-              className="border rounded px-2 py-1"
+              className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
             />
           ) : (
             book.isbn || "Not Available"
           )}
         </p>
 
-        <p>
-        Publisher:{" "}
-        {editingId === book.id ? (
-          <input
-            type="text"
-            value={editedPublisher}
+        <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">Publisher:</span>{" "}
+          {editingId === book.id ? (
+            <input
+              type="text"
+              value={editedPublisher}
             onChange={(e) => setEditedPublisher(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
         ) : (
           book.publisher || "Not Available"
         )}
         </p>
 
-        <p>
-         Publication Year:{" "}
+        <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">Publication Year:</span>{" "}
          {editingId === book.id ? (
            <input
                 type="number"
@@ -361,74 +363,84 @@ async function handleSearch() {
                 onChange={(e) =>
                   setEditedPublicationYear(Number(e.target.value))
                 }
-                className="border rounded px-2 py-1"
+                className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               />
             ) : (
                 book.publication_year || "Not Available"
             )}       
         </p>
 
-        <p>
-        Category:{" "}
-        {editingId === book.id ? (
-          <input
-            type="text"
-            value={editedCategory}
-            onChange={(e) => setEditedCategory(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
-        ) : (
-          book.category
+        <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">Category:</span>{" "}
+          {editingId === book.id ? (
+            <input
+              type="text"
+              value={editedCategory}
+              onChange={(e) => setEditedCategory(e.target.value)}
+              className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
+          ) : (
+            book.category
         )}
         </p>
 
-        <p>
-        Pages:{" "}
-        {editingId === book.id ? (
-          <input
-            type="number"
-            value={editedPages}
-            onChange={(e) => setEditedPages(Number(e.target.value))}
-            className="border rounded px-2 py-1"
-          />
-        ) : (
-          book.pages
-        )}
+        <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">Pages:</span>{" "}
+          {editingId === book.id ? (
+            <input
+              type="number"
+              value={editedPages}
+              onChange={(e) => setEditedPages(Number(e.target.value))}
+              className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
+          ) : (
+            book.pages
+          )}
         </p>
 
-        <p>
-        Available Copies:{" "}
-        {editingId === book.id ? (
+        <p className="mt-4 text-slate-300">
+          <span className="text-slate-400">Available Copies:</span>{" "}
+          {editingId === book.id ? (
           <input
             type="number"
             value={editedAvailableCopies}
             onChange={(e) =>
               setEditedAvailableCopies(Number(e.target.value))
             }
-            className="border rounded px-2 py-1"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           />
         ) : (
-          book.available_copies
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${
+              book.available_copies > 0
+                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20"
+                : "bg-red-500/15 text-red-300 border border-red-500/20"
+            }`}
+          >
+            {book.available_copies > 0
+              ? `${book.available_copies} Available`
+              : "Unavailable"}
+          </span>
         )}
         </p>
 
-        <p>
-        Total Copies:{" "}
-        {editingId === book.id ? (
-          <input
-            type="number"
-            value={editedTotalCopies}
-            onChange={(e) =>
-              setEditedTotalCopies(Number(e.target.value))
-            }
-            className="border rounded px-2 py-1"
-          />
+        <p className="text-slate-300 mb-2">
+          <span className="text-slate-400">Total Copies:</span>{" "}
+          {editingId === book.id ? (
+            <input
+              type="number"
+              value={editedTotalCopies}
+              onChange={(e) =>
+                setEditedTotalCopies(Number(e.target.value))
+              }
+              className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
         ) : (
           book.total_copies
         )}
         </p>
 
-    
+    <div className="mt-auto border-t border-white/10 pt-4">
     {isApprovedUser && (
       <BorrowButton
         bookId={book.id}
@@ -443,7 +455,7 @@ async function handleSearch() {
        <button
        type="button"
        onClick={() => handleUpdate(book.id)}
-       className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-green-700 cursor-pointer"
+       className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-400 transition-all cursor-pointer mr-2"
        >
         Save
        </button>
@@ -462,7 +474,7 @@ async function handleSearch() {
         setEditedAvailableCopies(book.available_copies);
         }}
         type="button"
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 mr-2 hover:bg-blue-700 cursor-pointer"
+        className="rounded-lg bg-blue-500/15 border border-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-300 hover:bg-blue-500/25 transition-all cursor-pointer mr-2"
        >
         Edit
        </button>
@@ -471,7 +483,7 @@ async function handleSearch() {
       <button
       type="button"
       onClick={() => seteditingId(null)}
-      className="bg-gray-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-gray-700 cursor-pointer"
+      className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600 transition-all cursor-pointer"
       >
       Cancel
      </button>
@@ -479,14 +491,16 @@ async function handleSearch() {
         <button 
         type="button"
         onClick={() => handleDelete(book.id)}
-        className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2 cursor-pointer hover:bg-red-800 cursor-pointer">
+        className="rounded-lg bg-red-500/15 border border-red-500/20 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/25 transition-all cursor-pointer">
           Delete
         </button>
         )}
       </>
      )}
     </div>
+    </div>
   ))}
+  </div>
 
   {totalPages > 1 && (
     <div className="flex justify-center items-center gap-2 mt-8 mb-4 flex-wrap">
@@ -582,4 +596,5 @@ async function handleSearch() {
  
     </div>
   );
+  
 }
