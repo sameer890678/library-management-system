@@ -1,15 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase-server";
-
-type Member = {
-  id: number;
-  name: string;
-  student_id: string | null;
-  email: string | null;
-  phone: string | null;
-  role: string;
-  status: string;
-};
+import MembersList from "./MembersList";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -60,61 +51,7 @@ export default async function MembersPage() {
         Library Members
       </h1>
 
-      {!members || members.length === 0 ? (
-        <div className="border rounded-lg p-6">
-          <p className="text-gray-500">
-            No registered members found.
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto border rounded-lg">
-          <table className="w-full text-left">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-4">Name</th>
-                <th className="p-4">Student ID</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Phone</th>
-                <th className="p-4">Role</th>
-                <th className="p-4">Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {members.map((member) => (
-                <tr
-                  key={member.id}
-                  className="border-t"
-                >
-                  <td className="p-4">
-                    {member.name}
-                  </td>
-
-                  <td className="p-4">
-                    {member.student_id || "N/A"}
-                  </td>
-
-                  <td className="p-4">
-                    {member.email || "N/A"}
-                  </td>
-
-                  <td className="p-4">
-                    {member.phone || "N/A"}
-                  </td>
-
-                  <td className="p-4">
-                    {member.role}
-                  </td>
-
-                  <td className="p-4">
-                    {member.status}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <MembersList members={members || []} />
     </main>
   );
 }
