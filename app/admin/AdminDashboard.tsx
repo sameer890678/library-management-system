@@ -19,9 +19,12 @@ type Member = {
 export default function AdminPage() {
   const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
+  const [actionMessage, setActionMessage] = useState("");
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
 
   useEffect(() => {
-    checkAdmin();
+    
+    checkAdmin()
   }, []);
   
   const checkAdmin = async () => {
@@ -70,7 +73,12 @@ export default function AdminPage() {
     setMembers(data || []);
   };
 
+  
+
   const approveMember = async (id: number) => {
+    setActionLoading(id);
+    setActionMessage("");
+
     const { error } = await supabase
       .from("members")
       .update({ status: "approved" })
@@ -78,13 +86,28 @@ export default function AdminPage() {
   
     if (error) {
       console.log(error);
+      setActionMessage("Failed to approve member.");
+      setActionLoading(null);
       return;
     }
-  
-    fetchPendingMembers();
+
+    setActionMessage("Member approved successfully.");
+    await fetchPendingMembers();
+    setActionLoading(null);
   };
 
   const rejectMember = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to reject this signup request?"
+    );
+  
+    if (!confirmed) {
+      return;
+    }
+
+    setActionLoading(id);
+    setActionMessage("");
+
     const { error } = await supabase
       .from("members")
       .update({ status: "rejected" })
@@ -92,28 +115,37 @@ export default function AdminPage() {
   
     if (error) {
       console.log(error);
+      setActionMessage("Failed to reject member.");
       return;
     }
   
-    fetchPendingMembers();
+    setActionMessage("Member rejected successfully.");
+    await fetchPendingMembers();
+    setActionLoading(null);
   };
 
   return (
-    <main className="p-10">
-      <h1 className="text-4xl font-bold mb-8">
+    <main className="min-h-screen bg-slate-950 p-6 md:p-10">
+      <h1 className="mb-8 text-4xl font-bold text-white">
         Admin Dashboard
       </h1>
 
-      <AdminStats />
+     <AdminStats />
       
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">
+      <section className="mt-10 rounded-2xl border border-slate-700 bg-slate-900/60 p-6 shadow-xl">
+        <h2 className="mb-6 text-3xl font-bold text-white">
           Pending Signup Requests
         </h2>
 
+        {actionMessage && (
+          <p className="mb-5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
+            {actionMessage}
+          </p>
+        )}
+
         {members.length === 0 ? (
-          <div className="border rounded-lg p-6">
-            <p className="text-gray-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800/60 p-6">
+            <p className="text-slate-400">
               No pending signup requests.
             </p>
           </div>
@@ -122,29 +154,42 @@ export default function AdminPage() {
             {members.map((member) => (
               <div
                 key={member.id}
-                className="border rounded-lg p-6"
+                className="rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg transition-all duration-300 hover:border-slate-600 hover:bg-slate-800/80 hover:shadow-xl"
               >
-                <h3 className="text-xl font-semibold">
+                <h3 className="mb-4 text-xl font-bold text-white">
                   {member.name}
                 </h3>
 
-                <p>Student ID: {member.student_id}</p>
-                <p>Email: {member.email}</p>
-                <p>Phone: {member.phone}</p>
+                <p className="mb-2 text-slate-300">
+                  <strong className="text-slate-400">Student ID:</strong>{" "}
+                  {member.student_id}
+                </p>
+                
+                <p className="mb-2 text-slate-300">
+                  <strong className="text-slate-400">Email:</strong>{" "}
+                  {member.email}
+                </p>
+                
+                <p className="mb-2 text-slate-300">
+                  <strong className="text-slate-400">Phone:</strong>{" "}
+                  {member.phone}
+                </p>
 
-                <div className="mt-4">
+                <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => approveMember(member.id)}
-                    className="bg-emerald-500 text-white px-4 py-2 rounded-lg mr-2 cursor-pointer hover:bg-emerald-700"
+                    disabled={actionLoading !== null}
+                    className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-400 transition-all duration-200 hover:bg-emerald-500/20 hover:text-emerald-300 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer"
                   >
-                    Approve
+                    {actionLoading === member.id ? "Approving..." : "Approve"}
                   </button>
 
                   <button
                     onClick={() => rejectMember(member.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red-700"
+                    disabled={actionLoading !== null}
+                    className="rounded-lg border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-400 transition-all duration-200 hover:bg-red-500/20 hover:text-red-300 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
                   >
-                    Reject
+                    {actionLoading === member.id ? "Rejecting..." : "Reject"}
                   </button>
                 </div>
               </div>
@@ -152,7 +197,7 @@ export default function AdminPage() {
           </div>
         )}
       </section>
-      <AdminBorrowings />
+     <AdminBorrowings /> 
     </main>
   );
 }

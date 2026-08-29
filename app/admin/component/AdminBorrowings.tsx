@@ -112,9 +112,9 @@ export default function AdminBorrowings() {
   };
 
   return (
-    <section className="mt-10">
+    <section className="mt-10 rounded-2xl border border-slate-700 bg-slate-900/60 p-6 shadow-xl">
 
-      <h2 className="text-2xl font-semibold mb-4">
+      <h2 className="mb-6 text-3xl font-bold text-white">
         Borrowing Records
       </h2>
 
@@ -123,34 +123,50 @@ export default function AdminBorrowings() {
         placeholder="Search by name, student ID, email, book, or author..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="border rounded-lg px-4 py-2 w-full mb-4"
+        className="mb-5 w-full rounded-xl border border-slate-600 bg-slate-900/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
       />
 
     <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("all")}
-          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 cursor-pointer"
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+            filter === "all"
+              ? "border-slate-400 bg-slate-600 text-white shadow-md"
+              : "border-slate-600 bg-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-white"
+          }`}
         >
           All
         </button>
       
         <button
           onClick={() => setFilter("borrowed")}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer"
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+            filter === "borrowed"
+              ? "border-blue-400/50 bg-blue-500/20 text-blue-300 shadow-md"
+              : "border-blue-500/20 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+          }`}
         >
           Borrowed
         </button>
       
         <button
           onClick={() => setFilter("returned")}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 cursor-pointer"
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+            filter === "returned"
+              ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300 shadow-md"
+              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+          }`}
         >
           Returned
         </button>
       
         <button
           onClick={() => setFilter("overdue")}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 cursor-pointer"
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+            filter === "overdue"
+              ? "border-red-400/50 bg-red-500/20 text-red-300 shadow-md"
+              : "border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+          }`}
         >
           Overdue
         </button>
@@ -160,8 +176,8 @@ export default function AdminBorrowings() {
       {loading ? (
         <p>Loading borrowing records...</p>
       ) : borrowings.length === 0 ? (
-        <div className="border rounded-lg p-6">
-          <p className="text-gray-500">
+        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg transition-all duration-300 hover:border-emerald-500/30 hover:shadow-xl">
+          <p className="text-gray-400">
             No borrowing records found.
           </p>
         </div>
@@ -171,63 +187,69 @@ export default function AdminBorrowings() {
           {filteredBorrowings.map((borrowing) => (
             <div
               key={borrowing.id}
-              className="border rounded-lg p-6"
+              className="rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg transition-all duration-300 hover:border-slate-600 hover:bg-slate-800/80 hover:shadow-xl rounded-lg p-6"
             >
 
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="mb-4 text-xl font-bold text-white">
                 {borrowing.books?.title || "Unknown Book"}
               </h3>
 
-              <p>
-                <strong>Author:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Author:</strong>{" "}
                 {borrowing.books?.author || "Unknown"}
               </p>
 
-              <p>
-                <strong>Borrowed By:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Borrowed By:</strong>{" "}
                 {borrowing.members?.name || "Unknown"}
               </p>
 
-              <p>
-                <strong>Student ID:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Student ID:</strong>{" "}
                 {borrowing.members?.student_id || "Unknown"}
               </p>
 
-              <p>
-                <strong>Email:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Email:</strong>{" "}
                 {borrowing.members?.email || "Unknown"}
               </p>
 
-              <p>
-                <strong>Borrow Date:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Borrow Date:</strong>{" "}
                 {new Date(
                   borrowing.borrow_date
                 ).toLocaleDateString()}
               </p>
 
-              <p>
-                <strong>Due Date:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Due Date:</strong>{" "}
                 {new Date(
                   borrowing.due_date
                 ).toLocaleDateString()}
               </p>
 
-              <p>
-                <strong>Return Date:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Return Date:</strong>{" "}
                 {borrowing.return_date
                   ? new Date(borrowing.return_date).toLocaleDateString()
                   : "Not returned yet"}
               </p>
 
-              <p>
-                <strong>Status:</strong>{" "}
+              <p className="mb-2 text-slate-300">
+                <strong className="text-slate-400">Status:</strong>{" "}
                 {borrowing.status === "borrowed" &&
                 new Date(borrowing.due_date) < new Date() ? (
-                  <span className="text-red-600 font-bold">
+                  <span className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-400">
                     OVERDUE
                   </span>
+                ) : borrowing.status === "returned" ? (
+                  <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
+                    RETURNED
+                  </span>
                 ) : (
-                  borrowing.status
+                  <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-bold text-blue-400">
+                    BORROWED
+                  </span>
                 )}
               </p>
 

@@ -62,44 +62,44 @@ export default function AdminStats() {
   };
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <section className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
 
-      <div className="border rounded-lg p-6">
-        <h2 className="text-lg font-semibold">
+      <div className="rounded-2xl border border-blue-500/20 bg-slate-900/70 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-xl">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
           Total Books
         </h2>
 
-        <p className="text-3xl font-bold mt-2">
+        <p className="mt-3 text-4xl font-bold text-blue-400">
           {totalBooks}
         </p>
       </div>
 
-      <div className="border rounded-lg p-6">
-        <h2 className="text-lg font-semibold">
+      <div className="rounded-2xl border border-purple-500/20 bg-slate-900/70 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/40 hover:shadow-xl">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
           Total Members
         </h2>
 
-        <p className="text-3xl font-bold mt-2">
+        <p className="mt-3 text-4xl font-bold text-purple-400">
           {totalMembers}
         </p>
       </div>
 
-      <div className="border rounded-lg p-6">
-        <h2 className="text-lg font-semibold">
+      <div className="rounded-2xl border border-emerald-500/20 bg-slate-900/70 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400/40 hover:shadow-xl">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
           Currently Borrowed
         </h2>
 
-        <p className="text-3xl font-bold mt-2">
+        <p className="mt-3 text-4xl font-bold text-emerald-400">
           {borrowedBooks}
         </p>
       </div>
 
-      <div className="border rounded-lg p-6">
-        <h2 className="text-lg font-semibold">
+      <div className="rounded-2xl border border-red-500/20 bg-slate-900/70 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-red-400/40 hover:shadow-xl">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
           Overdue
         </h2>
 
-        <p className="text-3xl font-bold mt-2">
+        <p className="mt-3 text-4xl font-bold text-red-400">
           {overdueBooks}
         </p>
       </div>

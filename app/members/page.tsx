@@ -55,8 +55,8 @@ export default async function MembersPage() {
   }
 
   return (
-    <main className="min-h-screen p-10">
-      <h1 className="text-4xl font-bold mb-8">
+    <main className="min-h-screen bg-slate-950 p-6 md:p-10">
+      <h1 className="mb-8 text-4xl font-bold text-white">
         Library Members
       </h1>
 
