@@ -117,7 +117,7 @@ export default function BorrowButton({
       {canBorrow && (
           <button
             onClick={openBorrowPopup}
-            className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-emerald-700 cursor-pointer"
+            className="w-full rounded-xl bg-emerald-500 px-4 py-3 font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-emerald-500/30 hover:-translate-y-0.5 cursor-pointer"
           >
             Borrow Book
           </button>
@@ -125,47 +125,47 @@ export default function BorrowButton({
 
       {/* Borrow Popup */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 bg-black/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-2xl">
 
-            <h2 className="text-2xl font-bold mb-5 text-black">
+            <h2 className="text-2xl font-bold mb-6 text-white">
               Borrow Book
             </h2>
 
-            <div className="mb-4 text-black font-times">
+            <div className="mb-5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-slate-300">
               <p>
-                <strong>Book:</strong> {bookTitle}
+                <strong className="text-emerald-300">Book:</strong> {bookTitle}
               </p>
             </div>
 
             {loadingMember ? (
-              <p className="text-black">Loading your information...</p>
+              <p className="py-4 text-center text-slate-400">Loading your information...</p>
             ) : member ? (
-              <div className="space-y-2 mb-5 text-black">
+              <div className="mb-6 space-y-3 rounded-xl border border-slate-700 bg-slate-900/50 p-4 text-slate-300">
 
                 <p>
-                  <strong>Name:</strong> {member.name}
+                  <strong className="text-slate-400">Name:</strong> {member.name}
                 </p>
 
                 <p>
-                  <strong>Student ID:</strong>{" "}
+                  <strong className="text-slate-400">Student ID:</strong>{" "}
                   {member.student_id || "Not available"}
                 </p>
 
                 <p>
-                  <strong>Email:</strong>{" "}
+                  <strong className="text-slate-400">Email:</strong>{" "}
                   {member.email || "Not available"}
                 </p>
 
                 <p>
-                  <strong>Phone:</strong>{" "}
+                  <strong className="text-slate-400">Phone:</strong>{" "}
                   {member.phone || "Not available"}
                 </p>
 
               </div>
             ) : null}
 
-            <label className="block font-medium mb-2 text-black">
+            <label className="block font-semibold mb-2 text-slate-300">
               Due Date
             </label>
 
@@ -173,11 +173,11 @@ export default function BorrowButton({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-full mb-4 text-black"
+              className="mb-5 w-full rounded-xl border border-slate-600 bg-slate-900/80 px-3 py-3 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
             />
 
             {message && (
-              <p className="mb-4 text-center">
+              <p className="mb-4 text-center rounded-lg bg-slate-900/60 px-3 py-2 text-sm text-slate-300">
                 {message}
               </p>
             )}
@@ -192,7 +192,7 @@ export default function BorrowButton({
                   setMember(null);
                   setMessage("");
                 }}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                className="flex-1 rounded-xl border border-slate-600 bg-slate-700 px-4 py-3 font-semibold text-white transition-all hover:bg-slate-600 cursor-pointer"
               >
                 Cancel
               </button>
@@ -201,7 +201,7 @@ export default function BorrowButton({
                 type="button"
                 onClick={handleBorrow}
                 disabled={loading || loadingMember}
-                className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-emerald-500 px-4 py-3 font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
               >
                 {loading ? "Borrowing..." : "Confirm Borrow"}
               </button>

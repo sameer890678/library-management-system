@@ -440,7 +440,12 @@ async function handleSearch() {
         )}
         </p>
 
-    <div className="mt-auto border-t border-white/10 pt-4">
+    <div className="mt-auto border-t border-white/10 pt-4 space-y-2">
+
+    <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">
+      Library Actions
+    </p>
+
     {isApprovedUser && (
       <BorrowButton
         bookId={book.id}
