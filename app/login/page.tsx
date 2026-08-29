@@ -10,6 +10,8 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const [messageType, setMessageType] = useState<"success" | "error" | "warning">("error");
   
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,7 +28,14 @@ export default function LoginPage() {
     console.log("1. SIGN IN FINISHED", data, error);
     
     if (error) {
-      setMessage(error.message);
+      setMessageType("error");
+    
+      if (error.message === "Invalid login credentials") {
+        setMessage("Invalid email or password.");
+      } else {
+        setMessage(error.message);
+      }
+    
       setLoading(false);
       return;
     }
@@ -52,6 +61,7 @@ export default function LoginPage() {
     }
     
     if (member.status === "pending") {
+      setMessageType("warning");
       setMessage("Your account is waiting for admin approval.");
       await supabase.auth.signOut();
       setLoading(false);
@@ -59,6 +69,7 @@ export default function LoginPage() {
     }
     
     if (member.status === "rejected") {
+      setMessageType("error");
       setMessage("Your account has been rejected by the admin.");
       await supabase.auth.signOut();
       setLoading(false);
@@ -137,10 +148,29 @@ export default function LoginPage() {
         </form>
 
         {message && (
-          <p className="mt-4 rounded-lg bg-slate-900/60 px-3 py-2 text-center text-sm text-slate-300">
+          <div
+            className={`mt-4 rounded-xl border px-4 py-3 text-center text-sm font-medium ${
+              messageType === "error"
+                ? "border-red-500/30 bg-red-500/10 text-red-400"
+                : messageType === "warning"
+                ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+            }`}
+          >
             {message}
-          </p>
+          </div>
         )}
+
+        <p className="mt-6 text-center text-sm text-slate-400">
+          Don't have an account?{" "}
+          <a
+            href="/signup"
+            className="font-medium text-emerald-400 transition-colors hover:text-emerald-300"
+          >
+            Sign up
+          </a>
+        </p>
+
       </div>
     </main>
   );
