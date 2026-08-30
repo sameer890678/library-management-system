@@ -175,10 +175,10 @@ export default function AdminBorrowings() {
 
       {loading ? (
         <p>Loading borrowing records...</p>
-      ) : borrowings.length === 0 ? (
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg transition-all duration-300 hover:border-emerald-500/30 hover:shadow-xl">
-          <p className="text-gray-400">
-            No borrowing records found.
+      ) : filteredBorrowings.length === 0 ? (
+        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center shadow-lg">
+          <p className="text-slate-400">
+            No borrowing records match your search or filter.
           </p>
         </div>
       ) : (
@@ -187,7 +187,7 @@ export default function AdminBorrowings() {
           {filteredBorrowings.map((borrowing) => (
             <div
               key={borrowing.id}
-              className="rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg transition-all duration-300 hover:border-slate-600 hover:bg-slate-800/80 hover:shadow-xl rounded-lg p-6"
+              className="rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg transition-all duration-300 hover:border-slate-600 hover:bg-slate-800/80 hover:shadow-xl"
             >
 
               <h3 className="mb-4 text-xl font-bold text-white">
@@ -252,16 +252,6 @@ export default function AdminBorrowings() {
                   </span>
                 )}
               </p>
-
-              {borrowing.status !== "returned" && (
-                <button
-                  type="button"
-                  onClick={() => returnBook(borrowing.id)}
-                  className="bg-emerald-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-emerald-700 cursor-pointer"
-                >
-                  Return Book
-                </button>
-              )}
 
             </div>
           ))}
