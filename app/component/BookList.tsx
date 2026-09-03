@@ -178,6 +178,25 @@ export default function BookList({ books }: BookListProps) {
 };
 
     const handleDelete = async (id: number) => {
+      const { data: book, error: fetchError } = await supabase
+        .from("books")
+        .select("total_copies, available_copies")
+        .eq("id", id)
+        .single();
+    
+      if (fetchError || !book) {
+        console.log("DELETE CHECK ERROR:", fetchError);
+        return;
+      }
+    
+      // Don't allow deletion if any copy is currently borrowed
+      if (book.available_copies !== book.total_copies) {
+        window.alert(
+          "This book cannot be deleted because some copies are currently borrowed."
+        );
+        return;
+      }
+      
         const confirmed = window.confirm(
   "Are you sure you want to delete this book?"
 );
