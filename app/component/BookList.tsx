@@ -196,7 +196,7 @@ export default function BookList({ books }: BookListProps) {
         );
         return;
       }
-      
+
         const confirmed = window.confirm(
   "Are you sure you want to delete this book?"
 );
@@ -546,7 +546,7 @@ async function handleSearch() {
         className={`px-4 py-2 rounded-lg ${
           currentPage === 1
             ? "bg-emerald-500 text-white"
-            : "bg-gray-700 text-white hover:bg-gray-600"
+            : "bg-gray-700 text-white hover:bg-gray-600 cursor-pointer"
         }`}
       >
         1
@@ -573,7 +573,7 @@ async function handleSearch() {
             className={`px-4 py-2 rounded-lg ${
               currentPage === page
                 ? "bg-emerald-500 text-white"
-                : "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-gray-700 text-white hover:bg-gray-600 cursor-pointer"
             }`}
           >
             {page}
