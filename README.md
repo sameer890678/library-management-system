@@ -110,35 +110,6 @@ Important rules include:
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-* Node.js
-* npm
-* Git
-* A Supabase project
-
-### Installation
-
-```bash
-git clone <repository-url>
-cd library-management-system
-npm install
-```
-
-Create your local environment configuration with the required Supabase variables, then run:
-
-```bash
-npm run dev
-```
-
-The application will be available at the local development URL provided by Next.js.
-
-> **Never commit environment files, API keys, passwords, or other private credentials to GitHub.**
-
----
-
 ## 📂 Project Structure
 
 ```text
