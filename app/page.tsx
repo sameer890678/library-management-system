@@ -3,6 +3,8 @@ import AddBookForm from "./component/AddBookForm";
 import BookList from "./component/BookList";
 import Navbar from "./component/Navbar";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { data, error } = await supabase
     .from("books")
