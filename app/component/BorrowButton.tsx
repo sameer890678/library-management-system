@@ -26,6 +26,7 @@ export default function BorrowButton({
 }: BorrowButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [dueDate, setDueDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
   const [member, setMember] = useState<Member | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -171,6 +172,7 @@ export default function BorrowButton({
 
             <input
               type="date"
+              min={today}
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               className="mb-5 w-full rounded-xl border border-slate-600 bg-slate-900/80 px-3 py-3 text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
