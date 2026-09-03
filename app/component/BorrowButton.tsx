@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "../../lib/supabase";
 
 ;
@@ -31,6 +32,18 @@ export default function BorrowButton({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMember, setLoadingMember] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const openBorrowPopup = async () => {
     setIsOpen(true);
@@ -125,8 +138,9 @@ export default function BorrowButton({
         )}
 
       {/* Borrow Popup */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 bg-black/70 px-4 backdrop-blur-sm">
+      {isOpen && 
+      createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-2xl">
 
             <h2 className="text-2xl font-bold mb-6 text-white">
@@ -211,7 +225,8 @@ export default function BorrowButton({
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
